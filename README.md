@@ -1,2 +1,2 @@
-# R-projects
+# Graduate School Projects
 School R projects
