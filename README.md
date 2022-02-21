@@ -1,3 +1,5 @@
+# Awaiting permission as to not violate academic honesty policies
+
 # Graduate School Classes
 
 STAT 535 - Statistical Computing
