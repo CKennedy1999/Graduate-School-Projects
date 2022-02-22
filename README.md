@@ -14,7 +14,13 @@ Models were selected after exploratory data analysis determined a log-difference
 
 Techniques: Arima(1,1,0) a differenced first-order auto regressive model, Bayesian structural model with auto regressive local level term
 
-## STAT 691P - Project Seminar (R)
+## STAT 691P - Masters Project Seminar (R)
+
+John F. Kennedy Airport and Simulation Studies
+
+Packages: tidyverse, Shiny, corrgram, Hmisc, caret, pscl, glmnet, pROC, skimr, RColorBrewer, mvtnorm, coefplot, GGally, leaps, boot, randomForest, gbm (and many more)
+
+Use a variety of statistical methods to analyze topics ranging from basic airport phenomena (such as the probability of flight delay) to deciphering data simulated by other graduate students to writing a package for k-nearest neighbor classification and developing a data analysis web app in R Shiny.
 
 ## STAT 697D - Applied Statistics and Data Analysis (R)
 
