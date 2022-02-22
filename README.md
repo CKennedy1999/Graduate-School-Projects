@@ -1,8 +1,6 @@
-# Awaiting permission as to not violate academic honesty policies
-
 # Graduate School Classes
 
-STAT 535 - Statistical Computing
+STAT 535 - Statistical Computing (Awaiting permission as to not violate academic honesty policy)
 
 STAT 610 - Bayesian Statistics
 
