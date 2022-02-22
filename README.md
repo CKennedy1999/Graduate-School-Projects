@@ -18,6 +18,12 @@ Techniques: Arima(1,1,0) a differenced first-order auto regressive model, Bayesi
 
 ## STAT 697D - Applied Statistics and Data Analysis (R)
 
+Analysis of Income Segregation and Intergenerational Mobility Across Colleges in the United States
+
+Packages: tidyverse, lme4, skimr, corrplot
+
+Use mixed effect models to investigate long term outcomes of students from low-income families after attending selective universities. How does the median parent income vary with each tier of school? Quantify the effect of Ivy plus schools on a defined success rate. Parse the relationship between the income mobility rate and success rate.
+
 ## STAT 697DS - Statistical Methods for Data Science (R)
 
 A Data Driven Approach to Fantasy Roster Building and MLB All-star Selections
