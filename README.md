@@ -8,7 +8,7 @@ Bayesian Inference: Google Stock Data
 
 Packages: tidyverse (ggplot2, dplyr, tidyr, readr, purrr, tibble), tidyquant, lubridate, bsts
 
-Fit and train a bayesian structural time series model on 'GOOGL' daily closing price from 2011 to 2020 to predict prices for the first six months of 2021.
+Fit and train a Bayesian structural time series model on 'GOOGL' daily closing price from 2011 to 2020 to predict prices for the first six months of 2021.
 
 Models were selected after exploratory data analysis determined a log-differenced price would render data as stationary.
 
