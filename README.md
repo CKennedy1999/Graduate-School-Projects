@@ -1,12 +1,22 @@
 # Graduate School Classes & Project Overviews
 
-## STAT 535 - Statistical Computing** (Python)
+## STAT 535 - Statistical Computing (Python)
 
-## STAT 610 - Bayesian Statistics** (R)
+## STAT 610 - Bayesian Statistics (R)
 
-## STAT 691P - Project Seminar** (R)
+Bayesian Inference: Google Stock Data
 
-## STAT 697D - Applied Statistics and Data Analysis** (R)
+Packages: tidyverse (ggplot2, dplyr, tidyr, readr, purrr, tibble), tidyquant, lubridate, bsts
+
+Fit and train a bayesian structural time series model on 'GOOGL' daily closing price from 2011 to 2020 to predict prices for the first six months of 2021.
+
+Models were selected after exploratory data analysis determined a log-differenced price would render data as stationary.
+
+Techniques: Arima(1,1,0) a differenced first-order auto regressive model, Bayesian structural model with auto regressive local level term
+
+## STAT 691P - Project Seminar (R)
+
+## STAT 697D - Applied Statistics and Data Analysis (R)
 
 ## STAT 697DS - Statistical Methods for Data Science (R)
 
@@ -30,10 +40,10 @@ Fit and validate classification models to compare strengths and weaknesses of ea
 
 Techniques: logistic regression (GLM), linear discriminant analysis (LDA), quadratic discriminant analysis (QDA), bagging, random forest (RF), boosting
 
-## STAT 697V - Data Visualization** (R)
+## STAT 697V - Data Visualization (R)
 
 In progress
 
-## BIOS 690P - Biostatistics and Data Science in Public Health** (R)
+## BIOS 690P - Biostatistics and Data Science in Public Health (R)
 
 In progress
