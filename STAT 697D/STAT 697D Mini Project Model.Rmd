@@ -1,0 +1,263 @@
+---
+title: "STAT 697D Mini Project Model"
+author: "Connor Kennedy"
+date: "4/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(dev = 'pdf')
+op = function(x, d=2) sprintf(paste0("%1.",d,"f"), x)
+```
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(MASS)
+library(caret)
+library(car)
+```
+
+```{r}
+#Load data
+MRC <- read.csv("mrc_table3.csv")
+
+MRC.clean <- MRC %>% 
+  filter(super_opeid > 0 & !is.na(count) & !is.na(mr_kq5_pq1)) %>%
+  mutate(pq1_count = as.integer(round(count * par_q1)),
+         log_count = log(count), log_par_median = log(par_median),
+         c_log_count = scale(log_count, center = T, scale = F),
+         c_female = scale(female, center = T, scale = F),
+         c_log_par_median = scale(log_par_median, center = T, scale = F))
+
+state.count <- MRC.clean %>% 
+  group_by(state) %>% 
+  summarise(n = n(), mean.mob = mean(mr_kq5_pq1), mean.par.inc = mean(par_mean),
+            mean.mob.top1 = mean(mr_ktop1_pq1))
+
+mean.mobility <- MRC.clean %>% 
+  group_by(tier_name) %>% 
+  summarise(n = n(), mean.mob = mean(mr_kq5_pq1), mean.par.inc = mean(par_mean),
+            mean.mob.top1 = mean(mr_ktop1_pq1), st.count = sum(count),
+            mean.female = mean(female, na.rm = TRUE), 
+            k_married = mean(k_married, na.rm = TRUE), 
+            par_rank = mean(par_rank), mean.par_q1 = mean(par_q1),
+            mean.par_q5 = mean(par_q5), mean.par_top10pc = mean(par_top10pc),
+            mean.st = mean(count), mean.mob.cond = mean(kq5_cond_parq1),
+            mean.mob.top1.cond = mean(ktop1pc_cond_parq1),
+            med.par.inc = median(par_median))
+
+```
+
+```{r}
+tier.counts <- mean.mobility %>%
+  dplyr::select(tier_name, n)
+tier.counts
+
+type.count <- MRC.clean %>%
+  group_by(tier_name) %>%
+  mutate(n = sum(count)) %>%
+  group_by(type) %>%
+  mutate(freq = n / sum(n)) %>%
+  dplyr::select(type, tier_name, freq)
+
+type.count
+
+
+cor(MRC.clean$type, MRC.clean$tier)
+```
+
+## State EDA {.tabset}
+
+### Parent Income
+
+```{r}
+state.count %>%
+  ggplot(aes(x = state, y = mean.par.inc)) +
+  geom_bar(stat="identity") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(y = 'Mean Parental Income', x = 'State')
+```
+
+### Joint Mobility Rate
+
+```{r}
+state.count %>%
+  ggplot(aes(x = state, y = mean.mob.top1)) +
+  geom_bar(stat="identity") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(y = 'Mean Mobility (Top 1%)', x = 'State')
+```
+
+## Tier EDA {.tabset}
+
+### Count
+
+```{r}
+mean.mobility %>%
+  ggplot(aes(x = tier_name, y = n)) +
+  geom_bar(stat="identity") +
+  coord_flip()
+```
+
+### Parent Income
+
+```{r}
+ggplot(mean.mobility, aes(x = tier_name, y = med.par.inc, fill = tier_name)) +
+  geom_bar(stat="identity") +
+  theme(legend.position = "none") +
+  labs(y = "Median Parental Income", x = "Tier") +
+  coord_flip()
+```
+
+### Joint Mobility Rate
+
+```{r}
+mean.mobility %>%
+  ggplot(aes(x = tier_name, y = mean.mob.top1)) +
+  geom_bar(stat="identity") +
+  coord_flip()
+```
+
+### Conditional Mobility Rate (Top Quantile)
+
+```{r}
+ggplot(mean.mobility, aes(x = tier_name, y = mean.mob.cond)) +
+  geom_bar(stat = "identity") +
+  coord_flip()
+```
+
+### Gender
+
+```{r}
+ggplot(mean.mobility, aes(x = tier_name, y = mean.female)) +
+  geom_bar(stat="identity") +
+  coord_flip()
+```
+
+### Success Rate
+
+```{r}
+ggplot(mean.mobility, aes(x = tier_name, y = mean.mob.cond, fill = tier_name)) +
+  geom_bar(stat="identity") +
+  theme(legend.position = "none") +
+  labs(y = "Success Rate", x = "Tier") +
+  coord_flip()
+```
+
+## Two Variable Plots {.tabset}
+
+### A
+
+```{r}
+```
+
+### B
+
+```{r}
+
+```
+
+## Models
+
+```{r}
+tier.mix <- lmer(kq5_cond_parq1 ~ factor(type) + factor(tier) + female + 
+                   log(count) + (1|super_opeid), data = MRC.clean)
+summary(tier.mix)
+
+tier.mix2 <- lmer(kq5_cond_parq1 ~ -1 + factor(type) + factor(tier) + female +
+                    log(count) + factor(region) + k_median + (1|super_opeid),
+                  data = MRC.clean)
+summary(tier.mix2)
+
+tier.mix3 <- lmer(mr_kq5_pq1 ~ -1 + factor(type) + factor(tier) + female +
+                    log(count) + factor(region) + k_median + (1|super_opeid),
+                  data = MRC.clean)
+summary(tier.mix3)
+
+anova(tier.mix, tier.mix2)
+
+#confint(tier.mix3)
+
+qqnorm(resid(tier.mix3))
+qqline(resid(tier.mix3))
+```
+
+## Model Diagnostics
+
+```{r}
+#ihs <- function(x) {
+#    y <- log(x + sqrt(x ^ 2 + 1))
+#    return(y)
+#}
+
+MRC.clean2 <- MRC.clean %>%
+  mutate(pq1_count = as.integer(round(count * par_q1)))
+
+bino.glmm <- glmer(kq5_cond_parq1 ~ -1 + factor(tier) + female + log(count) + 
+                     (1|super_opeid), family = "binomial", weights = pq1_count,
+                   data = MRC.clean2, 
+                   control=glmerControl(optimizer="bobyqa",
+                                        optCtrl=list(maxfun=2e5)))
+
+bino.glmm.j <- glmer(mr_kq5_pq1 ~ -1 + factor(tier) + female + log(count) + 
+                       (1|super_opeid), family = "binomial", weights = count,
+                     data = MRC.clean2, 
+                     control=glmerControl(optimizer="bobyqa",
+                                          optCtrl=list(maxfun=2e5)))
+
+#control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5))
+#binomial(link=logit)
+
+
+#Takes too long RIP
+#confint(bino.glmm)
+
+#fitted(bino.glmm)
+
+summary(bino.glmm)
+summary(bino.glmm.j)
+
+#VIF without intercept isn't useful
+#vif(bino.glmm)
+
+qqnorm(resid(bino.glmm))
+qqline(resid(bino.glmm))
+
+plot(bino.glmm)
+```
+
+
+```{r}
+ggplot(data = MRC.clean, aes(x = factor(cohort), y = kq5_cond_parq1)) +
+  geom_boxplot()
+
+ggplot(data = MRC.clean, aes(x = factor(cohort), y = mr_kq5_pq1)) +
+  geom_boxplot()
+```
+
+
+
+
+
+```{r}
+set.seed(1)
+bino.glmm.cond <- glmer(kq5_cond_parq1 ~ -1 + factor(tier) * c_log_par_median + 
+                           c_female + c_log_count + factor(region) + 
+                           (1|super_opeid) + (1|cohort), family = "binomial", 
+                         data = MRC.clean, weights = pq1_count, nAGQ = 0,
+                         control = glmerControl(optimizer="bobyqa", 
+                                                optCtrl=list(maxfun=2e5)))
+
+bino.glmm.joint <- glmer(mr_kq5_pq1 ~ -1 + factor(tier) * c_log_par_median + 
+                           c_female + c_log_count + factor(region) + 
+                           (1|super_opeid) + (1|cohort), family = "binomial", 
+                         data = MRC.clean, weights = count, nAGQ = 0,
+                         control = glmerControl(optimizer="bobyqa", 
+                                                optCtrl=list(maxfun=2e5)))
+```
+
+kq5_cond_parq1  ~ -1 + log.par.mean * factor(tier) + female + log(count) + factor(region) + 
+                     (1|super_opeid)
+
