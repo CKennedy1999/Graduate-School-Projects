@@ -2,6 +2,8 @@
 
 ## STAT 535 - Statistical Computing (Python)
 
+Waiting upon professor approval to upload whole project.
+
 ## STAT 610 - Bayesian Statistics (R)
 
 Bayesian Inference: Google Stock Data
